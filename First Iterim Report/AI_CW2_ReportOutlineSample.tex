@@ -1,0 +1,216 @@
+\documentclass[11pt]{cmpreport}
+
+\usepackage[]{graphics}
+\usepackage{natbib}
+\usepackage[margin=2cm]{geometry}
+
+\usepackage{rotating}
+\usepackage{subfloat}
+\usepackage{color}
+
+%opening
+\title{Developing an Intelligent Chatbot: the First Interim Report}
+\author{Group xx: Member 1*, Member 2 and Member 3}
+
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+	This interim report presents (1) the outline of our coursework report, (2) some initial descriptions of the requirements of the coursework, the methods, programming languages, packages, tools that have been identified so far, and (3) an initial work plan.      
+
+\end{abstract}
+
+\section{Introduction}
+
+%(Brief introduction to the coursework. 
+%You don't have to write much.  
+%You may introduce a bit on chatbot in general if like, and why an intelligent chatbot is useful using the subsections headings if you wish.)  
+
+A chatbot is a software application designed to converse with a human via text messages, in an as convincingly human way as possible. Chatboxes are often used on websites to automate the provision of information from specific human definable questions.
+
+Intelligent chatbox systems are useful for a wide range of reasons. Most often they are useful for automating tasks which would otherwise have required a human to operate. They equally can be built to to provide information on a wide range of topics.
+
+\subsection{Background and Motivation}
+%A bit background information on chatbot in general and the coursework specification\citep{AI2018CW}.
+
+The program we are required to create is a chatbox system for finding the cheapest available train ticket for a chosen journey. The system is also required to use Artificial Intelligence techniques to improve customer service satisfaction. 
+
+\subsection{Aim and Objectives of this coursework} 
+%You may rephrase the the aim and objectives from your point of view. 
+
+The aim of the coursework task is to create an intelligent conversation system as a small group project. The task requires the use of complex Artificial Inteligence techniques to provide the users with the most natural human interaction possible.
+
+The project has a number objectives which we are comparing using the use of the MoSCoW analysis, to determine the feasibility and priority of each goal.
+
+\subsubsection{Must}
+\begin{itemize}
+\item The system will process data provided in a database format.
+\item test
+\end{itemize}
+\subsubsection{Should}
+\begin{itemize}
+\item test
+\end{itemize}
+\subsubsection{Could}
+\begin{itemize}
+\item test
+\end{itemize}
+\subsubsection{Will Not}
+\begin{itemize}
+\item test
+\end{itemize}
+\subsection{Difficulties and Risks}
+%List as many as you can identify. 
+
+
+The risks of the project stem predominately from the objectives identified above...
+
+
+
+\subsection{Work Plan}
+%Draw a Gantt Chart and put it here.
+
+
+\begin{cmpfigure}{Project Gantt chart \label{pplan}}
+\begin{sideways}
+\begin{ganttchart}[x unit=0.45cm, vgrid, title label font=\scriptsize,
+canvas/.style={draw=black, dotted},
+/pgfgantt/milestone left shift = 0,
+/pgfgantt/milestone right shift = 0
+]{1}{28}
+\gantttitle{Project schedule shown for e-vision week numbers
+ and semester week numbers}{28} \\
+\gantttitlelist{1,...,28}{1}\\
+
+   \ganttbar{Project proposal}{1}{3}                 %elem0  
+\\ \ganttbar{Literature review}{3}{5}                %elem1 
+\\ \ganttbar{Design}{6}{8}                           %elem2
+\\ \ganttbar{Must (Coding)}{9}{13}                   %elem3
+\\ \ganttmilestone{Minimal Viable Product}{14}       %elem4
+\\ \ganttbar{Should (Coding)}{14}{17}                %elem5
+\\ \ganttbar{Could (Coding)}{18}{19}                 %elem6
+\\ \ganttbar{Testing}{9}{19}                         %elem7
+\\ \ganttmilestone{Code delivery}{20}                %elem8
+\\ \ganttbar{Final report writing}{21}{25}           %elem9
+\\ \ganttmilestone{Portfolio submission}{26}         %elem10
+\\ \ganttbar{Inspection preparation}{27}{28}         %elem11
+
+\ganttlink{elem0}{elem1} 
+\ganttlink{elem1}{elem2} 
+\ganttlink{elem2}{elem3} 
+\ganttlink{elem2}{elem7} 
+\ganttlink{elem3}{elem4} 
+\ganttlink{elem4}{elem5}
+\ganttlink{elem5}{elem6}
+\ganttlink{elem6}{elem8}
+\ganttlink{elem7}{elem8}
+\ganttlink{elem8}{elem9}
+
+\ganttlink{elem9}{elem10}
+\ganttlink{elem10}{elem11}
+
+
+\end{ganttchart}
+\end{sideways}
+\end{cmpfigure}
+
+\section{Related Work} 
+%Review some similar chatbot systems. (Write as much as you have now.)  
+
+https://www.virginmedia.com/
+
+https://www.dpd.co.uk/content/how-can-we-help/contact.jsp
+
+https://www.santander.co.uk/personal/support
+
+https://help.disneyplus.com/csp
+
+\section{Methods, Tools and Frameworks}
+In this section, you should describe the methods, programming languages, packages, tools and framework you plan to use.
+for this report, you can list some you have identified and intend to use.
+No need to give any details.  
+
+\subsection{Methods}
+
+You may list some methods you will use for developing your chatbot, including 
+   
+Such as what type of user interface (graphical, text, or voice, etc) you intend to use.
+
+What Natural Language Processing and understanding methods you intend use, 
+
+What referring or reasoning methods
+
+What prediction methods, such as kNN, neural networks etc. 
+             
+\subsection{Languages, Packages, Tools}
+
+The program will be designed using python 3.7.
+
+On programming language: using Python or Java, or others. 
+
+Packages: for NLP, use NLTK\citep{NLTK}, or others, 
+
+For KnowledgeBase and Engine: PyKE or PyKnow, or others. 
+
+For Database: e.g, Postgres, or MongoDB     
+ 
+\subsection{Development Framework}
+
+
+\section{Design of the Chatbot}
+
+ 
+\subsection{The Architecture of the chatbot}
+You may draw a functional diagram if you like.  
+
+You can describe your design for each key module or component of your chatbot, in a subsection. E.g. 
+\subsection{User Interface} 
+
+\subsection{NLP}
+
+\subsection{Knowledgebase}
+
+\subsection{Inferring Engine}
+
+\subsection{Delay Prediction Models}
+
+\subsection{Conversation Control}
+
+%\begin{table}
+%\centering
+%\caption{This table lists ......}
+%
+%\begin{tabular}{|c|c|c|c|c|c|}
+%\hline Methods &  &  &  &  &  \\ 
+%\hline  &  &  &  &  &  \\ 
+%\hline  &  &  &  &  &  \\ 
+%\hline 
+%\end{tabular} 
+%\label{TableCC}
+%\end{table}
+
+\section{Implementation}
+
+\section{Testing}
+
+\subsection{Unit Testing}
+
+\subsection{Integration Testing}
+
+\subsection{System Testing}
+
+\subsection{Userbility Testing}
+
+
+\section{Evaluation and Discussion}
+
+\section{Conclusion or Summary}
+
+\bibliographystyle{agsm}
+%\bibliographystyle{apalike}
+% you should use your own bibtex file to replace the following example_ref bib file.
+\bibliography{example_refs} 
+
+\end{document}
