@@ -10,7 +10,7 @@
 
 %opening
 \title{Developing an Intelligent Chatbot: the First Interim Report}
-\author{Group xx: Member 1*, Member 2 and Member 3}
+\author{Group 26: Adam Biggs 1*, Samuel Bedeau 2 and Rohan Samuel 3}
 
 
 \begin{document}
@@ -23,12 +23,7 @@
 \end{abstract}
 
 \section{Introduction}
-
-%(Brief introduction to the coursework. 
-%You don't have to write much.  
-%You may introduce a bit on chatbot in general if like, and why an intelligent chatbot is useful using the subsections headings if you wish.)  
-
-A chatbot is a software application designed to converse with a human via text messages, in an as convincingly human way as possible. Chatboxes are often used on websites to automate the provision of information from specific human definable questions.
+A chatbot is a software application designed to converse with a human via text messages, in an as convincingly human way as possible. Chatboxes are often used on websites to automate the provision of information from specific human definable questions. Using artificial intelligence and natural language processing, a chatbot can simulate conversation with a user to help them complete a task, or answer a question they may have.
 
 Intelligent chatbox systems are useful for a wide range of reasons. Most often they are useful for automating tasks which would otherwise have required a human to operate. They equally can be built to to provide information on a wide range of topics.
 
@@ -63,11 +58,12 @@ The project has a number objectives which we are comparing using the use of the 
 \end{itemize}
 \subsection{Difficulties and Risks}
 %List as many as you can identify. 
-
-
-The risks of the project stem predominately from the objectives identified above...
-
-
+The risks of the project stem predominately from the objectives identified above. In addition there are also a few risks noted below: 
+\begin{itemize}
+    \item Complexity of the task and topics 
+    \item Failing to understand what the user asked, failure in understanding sentiment
+    \item Providing meaningful responses
+\end{itemize}
 
 \subsection{Work Plan}
 %Draw a Gantt Chart and put it here.
@@ -128,33 +124,27 @@ https://www.santander.co.uk/personal/support
 https://help.disneyplus.com/csp
 
 \section{Methods, Tools and Frameworks}
-In this section, you should describe the methods, programming languages, packages, tools and framework you plan to use.
-for this report, you can list some you have identified and intend to use.
-No need to give any details.  
+The methods we plan to use is a combination of the following techniques: 
+\begin{itemize}
+    \item Prediction Models: K-nearest Neighbours, bayesian model, Markov, Neural Networks
+    \item Reasoning Engine: Infer answers from user
+    \item Knowledge base: Represented by Questions and Answers, rules
+    \item NLPU: Process and understand questions from user
+    \item Database: Store previous conversations, data about subject area
+\end{itemize}
+We will be using Python as a programming language, libraries such as spaCy, nltk, and, also research several other libraries that will be of help to us in our development.
 
 \subsection{Methods}
 
-You may list some methods you will use for developing your chatbot, including 
-   
-Such as what type of user interface (graphical, text, or voice, etc) you intend to use.
-
-What Natural Language Processing and understanding methods you intend use, 
-
-What referring or reasoning methods
-
-What prediction methods, such as kNN, neural networks etc. 
-             
+We will prioritise primarily on having a command line interface to interact with our system and if we have more time we will develop a graphical user interface.
+In addition to this we will look into NLP methods such as tokenisation, and supervised learning methods such as neural networks to process the text that is inputted by the user. For prediction methods, we will look into libraries such as SciKit-Learn, and in terms of algorithms: K-Nearest Neighbours.
 \subsection{Languages, Packages, Tools}
 
-The program will be designed using python 3.7.
-
-On programming language: using Python or Java, or others. 
-
-Packages: for NLP, use NLTK\citep{NLTK}, or others, 
-
-For KnowledgeBase and Engine: PyKE or PyKnow, or others. 
-
-For Database: e.g, Postgres, or MongoDB     
+On programming languages: We will be using Python. 
+Packages: for NLP, we will use NLTK\citep{NLTK}, for a start and branch into others when researching. 
+For KnowledgeBase and Engine: PyKE or PyKnow. 
+For Database: We will use Postgres.
+Some of these may be subject to change if we find a package/integration more suited to us and shall be updated accordingly in our documentation.
  
 \subsection{Development Framework}
 
