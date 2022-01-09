@@ -21,8 +21,7 @@ if __name__ == "__main__":
     df = pd.read_csv('stations.csv', header =0)
     df['ner_name'] = df['name'].astype(str).apply(lambda x: list(snlp(x).ents))
     pattern_to_replace = "{}"
-    test_data = df['name']
-    print(test_data)
+    test_data = df['ner_name']
     TRAIN_DATA = []
     # For every station, it has to have the format: 
     '''
@@ -51,8 +50,8 @@ if __name__ == "__main__":
       # Build spacy format
       entities.append((start_index,end_index, 'STATION'))
       TRAIN_DATA.append((station_name_train_data, {"entities" : entities}))
-      used_station_list.append(station_name_train_data)
-      test_data.drop(station_name_train_data, axis = 0)
+      #used_station_list.append(station_name_train_data)
+      #test_data.drop(station_name_train_data, axis = 0)
 
     optimizer = nlp.create_optimizer()
     other_pipes = [pipe for pipe in nlp.pipe_names if pipe != "ner"]
