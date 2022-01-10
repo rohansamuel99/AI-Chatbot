@@ -31,10 +31,23 @@ from urllib.parse import urlparse
 from urllib.parse import urljoin
 from urllib.parse import urlunsplit
 
+from bs4 import BeautifulSoup
+import re
+
 Permissions = {}
 
+class Ticket():
+  def __init__(self, time, startStation, endStation, timeLength, cost):
+    self.time = time
+    self.startStation = startStation
+    self.endStation = endStation
+    self.timeLength = timeLength
+    self.cost = cost
+    
+
+
 def main():
-    # https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep
+    # https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep#outwardJump
     # url to search
 
     start = 'NRW'
@@ -43,12 +56,34 @@ def main():
     time = '1630'
     departing = 'dep'
 
-    url = f'https://ojp.nationalrail.co.uk/service/timesandfares/{start}/{destination}/{day}/{time}/{departing}'
+    url = f'https://ojp.nationalrail.co.uk/service/timesandfares/{start}/{destination}/{day}/{time}/{departing}#outwardJump'
     timestamp, urlUsed, page_contents = get_webpage(url)
+
+    textWithoutHtml = BeautifulSoup(page_contents, 'html.parser')
+
+    plaintext = re.sub("Â\xa0", ' ', textWithoutHtml.text)
+    plaintext = re.sub("\n", ' ', plaintext)
+    plaintext = re.sub("\t", ' ', plaintext)
+    plaintext = re.sub(" + ", ',', plaintext)
+
+    
+
+    #also need remove \t \n and Â\xa0
+
 
     #use fancy text stuff to remove empty characters!!!!!!!!!!!!
 
-    tickets = str(page_contents).split('Departs', 0)
+    ticketPlaintextArray = plaintext.split('Departs at')
+    ticketPlaintextArray.pop(0)
+
+    tickets = []
+    for ticketData in ticketPlaintextArray:
+      ticketDataArray = ticketData.split(',')
+      tickets.append(Ticket(ticketDataArray[0],
+       ticketDataArray[1] + ticketDataArray[2],
+       ticketDataArray[10], 
+       ticketDataArray[3] + ticketDataArray[4], 
+       ticketDataArray[18]))
 
     a = 0
 
