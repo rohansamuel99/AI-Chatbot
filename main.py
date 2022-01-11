@@ -3,81 +3,83 @@ from spacy.training import Example
 from spacy.util import minibatch, compounding
 from pathlib import Path
 import pandas as pd
-import nltk
-import re
 import random
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-nltk.download('maxent_ne_chunker')
-nltk.download('words')
-from chatbot import require_details, process_details
+import warnings
 nlp = spacy.load("en_core_web_md")
 
 #python -m spacy download en_core_web_md
 if __name__ == "__main__":  
     ner = nlp.get_pipe('ner')
-    
-    snlp = spacy.load("en_core_web_md")
-    df = pd.read_csv('stations.csv', header =0)
-    df['ner_name'] = df['name'].astype(str).apply(lambda x: list(snlp(x).ents))
-    pattern_to_replace = "{}"
-    test_data = df['ner_name']
+
+    # Reading from file and extracting value into list
+    df = pd.read_csv('stations.csv',usecols=[0])
+    station_list = df["name"].to_csv(header=None).split(',')
+    station_list = [col.replace('\r\n','').replace('(','').strip().lower() for col in station_list]
     TRAIN_DATA = []
-    # For every station, it has to have the format: 
     '''
+    For every station, it has to have the format:
     ("{} is a station in the UK", {"entities": [(0, 7, "STATION")]})
     first character index
     last character index
     name of entity tag/type
     '''
     train_sentence = "{} is a station in the UK"
-    train_sentence2 = "I want to go to {} please"
-    train_sentence3 = "I will be leaving from {}"
-    list_train_sentences = [train_sentence,train_sentence2, train_sentence3]
     used_station_list = []
-    for every_station_name in test_data:
+    for every_station_name in station_list:
+        try:
+            entities = []
+            station = str(every_station_name)
+            station_in_sentence = train_sentence.format(station)
+            start_index = station_in_sentence.index(station)
+            end_index = station_in_sentence.index(station) + len(station)
+            # Build spacy format
+            entities.append((start_index,end_index, 'STATION'))
+            if station_in_sentence not in TRAIN_DATA:
+                TRAIN_DATA.append((station_in_sentence, {"entities" : entities}))
+                used_station_list.append(every_station_name)
+                station_list.remove(every_station_name)
+        except IndexError as i_error:
+            print("empty station name", i_error)
 
-      entities = []
-      station = str(every_station_name)
-      # Randomly pick a sentence to for the station name, to create better training model
-      picked_sentence = list_train_sentences[random.randint(0,len(list_train_sentences)-1)]
-      # Formatting for station name in random sentence - simulating user input
-      station_name_train_data = picked_sentence.format(station)
-      # Index of first character in string
-      start_index = station_name_train_data.index(station)
-      # Index of last character in string
-      end_index =station_name_train_data.rfind(station[-1])
-      # Build spacy format
-      entities.append((start_index,end_index, 'STATION'))
-      TRAIN_DATA.append((station_name_train_data, {"entities" : entities}))
-      #used_station_list.append(station_name_train_data)
-      #test_data.drop(station_name_train_data, axis = 0)
+    for _, annotations in TRAIN_DATA:
+        for ent in annotations.get("entities"):
+            ner.add_label(ent[2])
 
-    optimizer = nlp.create_optimizer()
-    other_pipes = [pipe for pipe in nlp.pipe_names if pipe != "ner"]
-    with nlp.disable_pipes(*other_pipes):  # only train NER
+    # Disable pipeline components you don't need to change
+    pipe_exceptions = ["ner", "trf_wordpiecer", "trf_tok2vec"]
+    unaffected_pipes = [pipe for pipe in nlp.pipe_names if pipe not in pipe_exceptions]
+
+
+    with nlp.disable_pipes(*unaffected_pipes):  # only train NER
       for itn in range(20):
         random.shuffle(TRAIN_DATA)
         losses = {}
-        for text, annotations in TRAIN_DATA:
-            doc = nlp.make_doc(text)
-            ner.add_label((annotations['entities'][0][2]))
-            example = Example.from_dict(doc, annotations)
-            nlp.update([example], drop=0.35, sgd=optimizer, losses=losses)
-        print(losses)
+        batches = minibatch(TRAIN_DATA,size=compounding(4.0,32.0,1.001))
+        for batch in batches:
+            text,annotations = zip(*batch)
+            example = []
+            # Update the model with iterating each text
+            for i in range(len(text)):
+                doc = nlp.make_doc(text[i])
+                example.append(Example.from_dict(doc, annotations[i]))
 
-    test_text = 'I want to go to Liverpool please'
-    doc = nlp(test_text)
-    print("Entities in '%s'" % test_text)
-    for ent in doc.ents:
-        print(ent.label_, " -- ", ent.text)
-    # Relative path
-    output_dir = Path('\AI-Chatbot')
+            # Update the model
+            nlp.update(example, drop=0.5, losses=losses)
+            print("Losses", losses)
+
+
+    # -----------------------------------------------------------------------
+    # Saving & Loading the new NER Model
+
+    output_dir = Path('/AI-Chatbot')
     nlp.to_disk(output_dir)
     print("Saved model to", output_dir)
-
     # Load the saved model and predict
     print("Loading from", output_dir)
     nlp_updated = spacy.load(output_dir)
-    doc = nlp_updated("I want to go to Manchester please")
+    # -----------------------------------------------------------------------
+
+    doc = nlp_updated("Manchester is a station in the uk")
+    print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
+    doc = nlp("Liverpool Street is a station in the uk")
     print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
