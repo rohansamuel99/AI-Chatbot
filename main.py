@@ -5,9 +5,14 @@ from pathlib import Path
 import pandas as pd
 import random
 import warnings
+from nlpu import require_details,process_details
+from training_ner import train_model
 nlp = spacy.load("en_core_web_md")
+updated_nlp = spacy.load('C:/Users/Samuel/Documents/AI-Chatbot') # Change to relative path or your own path
+
 if __name__ == "__main__":
-    # data = require_details()
-    # process_details(data)
-    # Create User Details class
-    print("Group 26 Chatbot :D")
+     #model = train_model()
+     data = require_details()
+     process_details(data)
+     #Create User Details class
+     # print("Group 26 Chatbot :D")
