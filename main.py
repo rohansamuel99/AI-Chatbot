@@ -11,8 +11,7 @@ nlp = spacy.load("en_core_web_md")
 updated_nlp = spacy.load('C:/Users/Samuel/Documents/AI-Chatbot') # Change to relative path or your own path
 
 if __name__ == "__main__":
-     #model = train_model()
+     # model = train_model()
      data = require_details()
      process_details(data)
-     #Create User Details class
      # print("Group 26 Chatbot :D")
