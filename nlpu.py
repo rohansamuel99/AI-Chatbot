@@ -4,7 +4,7 @@ from spacy import displacy
 from training_ner import train_model
 from ticket_details import Ticket
 nlp = spacy.load("en_core_web_md")
-updated_nlp = spacy.load('C:/Users/Samuel/Documents/AI-Chatbot') # Change to relative path or your own path
+updated_nlp = spacy.load('/AI-Chatbot') # Change to relative path or your own path
 
 
 def require_details():

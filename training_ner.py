@@ -22,6 +22,7 @@ def train_model():
     name of entity tag/type
     '''
     train_sentence = "{} is a station in the UK"
+
     used_station_list = []
     for every_station_name in station_list:
         try:
