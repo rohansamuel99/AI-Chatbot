@@ -4,6 +4,7 @@ from datetime import datetime
 import sys
 import os.path
 from urllib.parse import urlparse
+import webbrowser
 
 
 # Global constants for special conditions when fetching web pages
@@ -47,14 +48,32 @@ class Ticket():
 
 
 def main():
-    # https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep#outwardJump
-    # url to search
+  start = 'Aberdeen Rail Station'
+  destination = 'Abergavenny Rail Station'
+  day = 'tomorrow'
+  time = '1630'
+  departing = 'dep'
 
-    start = 'NRW'
-    destination = 'Oxford_Circus'
-    day = 'tomorrow'
-    time = '1630'
-    departing = 'dep'
+  getRoutes(start, destination, day, time, departing)
+
+def getRoutes(start, destination, day, time, departing):
+
+    # https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep#outwardJump
+
+
+    # google maps might do it:
+    # google maps train 16/01/2022 10am norwich to standsted
+    # https://www.google.com/search?q=google+maps+train+16%2F01%2F2022+10am+norwich+to+standsted&client=firefox-b-d
+    # google maps train 16/01/2022 10am ASCOTT-UNDER-WYCHWOOD to ARUNDEL
+    #
+    # maybe if it searched 'google maps train 16/01/2022 10am ASCOTT-UNDER-WYCHWOOD to ARUNDEL'
+    # then after crawled the website for buy ticket to find the first '£' then use that for the money
+
+    #problems
+    # - If no route exists (if is a stupid time)
+    # - If multiple tickets are required then it gives a stupid popup - should still work
+    #    (https://ojp.nationalrail.co.uk/service/timesandfares/AXP/AGV/210122/0930/dep)
+
 
     url = f'https://ojp.nationalrail.co.uk/service/timesandfares/{start}/{destination}/{day}/{time}/{departing}#outwardJump'
     timestamp, urlUsed, page_contents = get_webpage(url)
@@ -84,6 +103,13 @@ def main():
        ticketDataArray[10], 
        ticketDataArray[3] + ticketDataArray[4], 
        ticketDataArray[18]))
+
+    # https://ojp.nationalrail.co.uk/service/purchaseticket/handoff?url=https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep#outwardJump
+    # https://ojp.nationalrail.co.uk/service/purchaseticket/handoff?url=https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep#outwardJump
+
+
+    # launch the website with the tickets on it.
+    webbrowser.open(url)
 
     a = 0
 
