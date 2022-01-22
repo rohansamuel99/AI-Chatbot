@@ -1,203 +1,99 @@
-#https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep
-
-from datetime import datetime
-import sys
-import os.path
-from urllib.parse import urlparse
-import webbrowser
-
-
-# Global constants for special conditions when fetching web pages
-invalid_URL =       "[-- invalid url --]"
-error_reading_URL = "[-- error reading URL --]"
-password_URL =      "[-- password url --]"
-protected_URL =     "[-- protected url --]"
-not_text_URL =      "[-- not text/html url --]"
-timeout_URL =       "[-- timed out URL --]"
-  
-URL_errors = set([invalid_URL, error_reading_URL,  password_URL, \
-    protected_URL, not_text_URL, timeout_URL ])
-
-#########################
-#<<<<< get_webpage module 
-#########################
-
-from urllib.robotparser import RobotFileParser
-from urllib.parse import urlparse
-from urllib.parse import urljoin
-import urllib.request, urllib.parse, urllib.error
-import urllib.request, urllib.error, urllib.parse
-
-from urllib.parse import urlparse
-from urllib.parse import urljoin
-from urllib.parse import urlunsplit
-
+import urllib.request
 from bs4 import BeautifulSoup
-import re
-
 from ticket_details import Ticket
 
-Permissions = {}
+# -------------------------
+# File: web_crawler.py
+# Classes: TicketFares, TicketFare
+# Notes: This file is used to crawl and retrieve from the train times website NationalRail. 
+# Author: Adam Biggs, ...
+# -------------------------
 
-# class Ticket():
-#   def __init__(self, time, startStation, endStation, timeLength, cost):
-#     self.time = time
-#     self.startStation = startStation
-#     self.endStation = endStation
-#     self.timeLength = timeLength
-#     self.cost = cost
-    
-# def main():
-#   start = 'Aberdeen Rail Station'
-#   destination = 'Abergavenny Rail Station'
-#   day = 'tomorrow'
-#   time = '1630'
-#   departing = 'dep'
+class TicketFares():
+  def __init__(self, ticketFares, url):
+    self.ticketFares = ticketFares
+    self.url = url
 
-#   getRoutes(start, destination, day, time, departing)
-# start, destination, day, time, departing
+  def __getattribute__(self, item):
+    return super(TicketFares, self).__getattribute__(item)
+
+class TicketFare():
+    def __init__(self, start, end, startTime, arrivalTime, length, cost):
+      self.start = start
+      self.end = end
+      self.startTime = startTime
+      self.arrivalTime = arrivalTime
+      self.length = length
+      self.cost = cost
+
+    def __getattribute__(self, item):
+      return super(TicketFare, self).__getattribute__(item)
 
 def crawl(ticket : Ticket):
-    # https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep#outwardJump
-
-    # google maps might do it:
-    # google maps train 16/01/2022 10am norwich to standsted
-    # https://www.google.com/search?q=google+maps+train+16%2F01%2F2022+10am+norwich+to+standsted&client=firefox-b-d
-    # google maps train 16/01/2022 10am ASCOTT-UNDER-WYCHWOOD to ARUNDEL
-    #
-    # maybe if it searched 'google maps train 16/01/2022 10am ASCOTT-UNDER-WYCHWOOD to ARUNDEL'
-    # then after crawled the website for buy ticket to find the first '£' then use that for the money
-
-    #problems
-    # - If no route exists (if is a stupid time)
-    # - If multiple tickets are required then it gives a stupid popup - should still work
-    #    (https://ojp.nationalrail.co.uk/service/timesandfares/AXP/AGV/210122/0930/dep)
-
-
-    #Testing
-    start = ticket.departure_station = 'cambridge' # in the form 'cambridge'
-    finish = ticket.destination      = 'norwich' # in the form 'norwich'
-    day = ticket.date_of_departure   = '26012022' # in the form ddmmyyyy
-    time = ticket.time_of_departure  = '1645' # in the form '1645' (hhmm)
+    #testing
+    start = ticket.departure_station  = 'cambridge' # in the form 'cambridge'
+    finish = ticket.destination       = 'norwich' # in the form 'norwich'
+    day = ticket.date_of_departure    = '26012022' # in the form ddmmyyyy
+    time = ticket.time_of_departure   = '1645' # in the form '1645' (hhmm)
     departing = 'dep'
 
     # https://ojp.nationalrail.co.uk/service/timesandfares/cambridge/norwich/26012022/1645/dep#outwardJump
+
     url = f'https://ojp.nationalrail.co.uk/service/timesandfares/{start}/{finish}/{day}/{time}/{departing}#outwardJump'
-    timestamp, urlUsed, page_contents = get_webpage(url)
+    urlUsed, page_contents = get_webpage(url)
 
     htmlPage = BeautifulSoup(page_contents, 'html.parser')
 
-    # textWithoutHtml.find("table",attrs={"id":"oft"}).find("tbody")
+    #This is an example of the html text I get BeautifulSoup to find. It holds all the infomation we need on two lines.
+    # span class="fare-breakdown">
+    # <input class="" type="hidden" value="SingleFare|1|Adult|Off-Peak Day Single||20.00||false|CDS|B5|LER|Greater Anglia|5|1|Travel is allowed via any permitted route.|ANY PERMITTED|FLEXIBLE|4"/>
+    # </span>
+    # <span class="journey-breakdown">
+    # <input class="" type="hidden" value="Cambridge|CBG|16:46|Norwich|NRW|18:43|1|57|1|GREEN_TICK||"/>
+    # </span>
 
-    plaintext = re.sub("Â\xa0", ' ', htmlPage.text)
-    plaintext = re.sub("\n", ' ', plaintext)
-    plaintext = re.sub("\t", ' ', plaintext)
-    plaintext = re.sub(" + ", ',', plaintext)
+    fareData = htmlPage.find_all("span",attrs={"class":"fare-breakdown"})
+    journeyData = htmlPage.find_all("span",attrs={"class":"journey-breakdown"})
 
-    
+    ticketFares = []
+    for iterator in range(5):
+      fareDataLine = fareData[iterator].find("input")['value']
+      journeyDataLine = journeyData[iterator].find("input")['value']
 
-    #also need remove \t \n and Â\xa0
+      fareDataLineArray = fareDataLine.split('|')
 
+      _cost = fareDataLineArray[5]
 
-    #use fancy text stuff to remove empty characters!!!!!!!!!!!!
+      journeyDataLineArray = journeyDataLine.split('|')
 
-    ticketPlaintextArray = plaintext.split('Departs at')
-    ticketPlaintextArray.pop(0)
+      _start = f"{journeyDataLineArray[0]} [{journeyDataLineArray[1]}]" 
+      _end = f"{journeyDataLineArray[3]} [{journeyDataLineArray[4]}]" 
+      _startTime = f"{journeyDataLineArray[2]}" 
+      _arrivalTime = f"{journeyDataLineArray[5]}"
+      _length = f"{journeyDataLineArray[6]}h {journeyDataLineArray[7]}m"
 
-    tickets = []
-    for ticketData in ticketPlaintextArray:
-      ticketDataArray = ticketData.split(',')
-      tickets.append(Ticket(ticketDataArray[0],
-       ticketDataArray[1] + ticketDataArray[2],
-       ticketDataArray[10], 
-       ticketDataArray[3] + ticketDataArray[4], 
-       ticketDataArray[18]))
+      ticketFares.append(TicketFare(_start, _end, _startTime, _arrivalTime, _length, _cost))
 
-    # https://ojp.nationalrail.co.uk/service/purchaseticket/handoff?url=https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep#outwardJump
-    # https://ojp.nationalrail.co.uk/service/purchaseticket/handoff?url=https://ojp.nationalrail.co.uk/service/timesandfares/NRW/Oxford_Circus/tomorrow/1630/dep#outwardJump
-
-
-    # launch the website with the tickets on it.
-    webbrowser.open(url)
-
-    a = 0
-
-# def domain_name(url):
-#     return urlparse(url)[1]
-
-# def can_read(url):
-
-#   domain = domain_name(url)
-#   if domain not in Permissions :
-#          rp = RobotFileParser()
-#          rp.set_url(urljoin('http://' + domain, 'robots.txt'))
-#          try :
-#             rp.read()
-#          except:
-#             return False
-         
-#          Permissions[domain] = rp
-
-#   res = False
-#   try:
-#     res  = Permissions[domain].can_fetch("*", url)
-#   except:
-#     return False
-
-#   return res
+    return TicketFares(ticketFares, urlUsed)
 
 def get_webpage(url):
-
-  timestamp = datetime.now().strftime("%Y-%m-%d:%H:%M:%S") 
-  #print "get_webpage(" + url + ")"
-#   if not can_read(url)  :
-#       return timestamp, url, protected_URL
-
-  #  try to open url, if unsuccessful, return default info and exit
-  #
-
   req = urllib.request.Request(url)
   try :
-    #print "Opening: " + url
     f = urllib.request.urlopen(req) 
-    #print "Opened: " + url
-  #
-  # changed IOError to "anything" , since urlopen sometimes throws
-  # httplib.BadStatusLine() exception, which apparently is not
-  # covered under IOError.
-  #
-  except IOError as e :
-     #print "IOError, e: "
-     if hasattr(e, 'code'):
-        if e.code == 401 :
-          #print "Error 401: " 
-          return timestamp, url, password_URL
-        else :
-          return timestamp, url, invalid_URL
 
-     else:
-          #print "No e-code"
-          return timestamp, url, invalid_URL
-  except: 
-        return timestamp, url,  invalid_URL
+  except IOError as e :
+    Exception("Error: Invalid URL")
   else:
-   
      if (f.info().get_content_type() == "text/html"): #altered 03Oct15 DJS
          #print ("Sucess: " + url)
          try: 
            page_contents = f.read()
          except:
-           page_contents = error_reading_URL
+           Exception("Error: Unable to Read Page Contents")
 
-         return timestamp, f.geturl(), page_contents
-     elif (f.info().get_content_type() == "application/pdf"): #added 22Oct15 DJS
-         print ('get_webpage: Found a PDF', url)
-         return timestamp, f.geturl(), not_text_URL
+         return f.geturl(), page_contents
      else:
-         #print ("not text/html: " + url)
-         return timestamp, f.geturl(), not_text_URL
-       
-
-
+         Exception("Error: Page is Not HTML")
+  
 if __name__ == "__main__":
 	crawl(Ticket('','','','',''))
