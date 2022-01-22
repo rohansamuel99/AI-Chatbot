@@ -3,6 +3,7 @@ from spacy.training import Example
 from spacy.util import minibatch, compounding
 from pathlib import Path
 import pandas as pd
+import json
 import random
 import warnings
 nlp = spacy.load("en_core_web_md")
@@ -25,6 +26,9 @@ def train_model():
 
     used_station_list = []
     for every_station_name in station_list:
+        json_string = json.dumps(every_station_name)
+        with open('train_data.json', 'w') as outfile:
+            outfile.write(json_string)
         try:
             entities = []
             station = str(every_station_name)
@@ -81,5 +85,7 @@ def train_model():
     doc = nlp("Liverpool Street is a station in the uk")
     print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
     '''
+
+
 
 
