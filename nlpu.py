@@ -47,11 +47,13 @@ def process_details(a_ticket):
   with doc.retokenize() as retokenizer:
     for ent in doc.ents:
       retokenizer.merge(doc[ent.start:ent.end])
-      print(ent.text, ent.label_)
+      #print(ent.text)
   with doc2.retokenize() as retokenizer:
     for ent in doc2.ents:
       retokenizer.merge(doc2[ent.start:ent.end])
-      print(ent.text, ent.label_)
+      #print(ent.text)
+
+  return f"start = {a_ticket.departure_station}, finish = {a_ticket.destination}, day = {a_ticket.date_of_departure}, time = {a_ticket.time_of_departure}"
 
 if __name__ == "__main__":
   pass
