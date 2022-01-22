@@ -3,8 +3,9 @@ from training_ner import train_model
 from spacy import displacy
 from training_ner import train_model
 from ticket_details import Ticket
+from web_crawler import crawl
 nlp = spacy.load("en_core_web_md")
-updated_nlp = spacy.load('/AI-Chatbot') # Change to relative path or your own path
+updated_nlp = spacy.load('/AI-Chatbot')
 
 
 def require_details():

@@ -72,7 +72,7 @@ def train_model():
     # -----------------------------------------------------------------------
     # Saving & Loading the new NER Model
 
-        output_dir = Path('C:/Users/Samuel/Documents/AI-Chatbot') # Change to relative path or your own path
+        output_dir = Path('/AI-Chatbot') # Change to relative path or your own path
         nlp.to_disk(output_dir)
         print("Saved model to", output_dir)
         # Load the saved model and predict
