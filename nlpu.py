@@ -3,8 +3,9 @@ from training_ner import train_model
 from spacy import displacy
 from training_ner import train_model
 from ticket_details import Ticket
+from web_crawler import crawl
 nlp = spacy.load("en_core_web_md")
-updated_nlp = spacy.load('/AI-Chatbot') # Change to relative path or your own path
+updated_nlp = spacy.load('/AI-Chatbot')
 
 
 def require_details():
@@ -47,11 +48,13 @@ def process_details(a_ticket):
   with doc.retokenize() as retokenizer:
     for ent in doc.ents:
       retokenizer.merge(doc[ent.start:ent.end])
-      print(ent.text, ent.label_)
+      #print(ent.text)
   with doc2.retokenize() as retokenizer:
     for ent in doc2.ents:
       retokenizer.merge(doc2[ent.start:ent.end])
-      print(ent.text, ent.label_)
+      #print(ent.text)
+
+  return f"start = {a_ticket.departure_station}, finish = {a_ticket.destination}, day = {a_ticket.date_of_departure}, time = {a_ticket.time_of_departure}"
 
 if __name__ == "__main__":
   pass
