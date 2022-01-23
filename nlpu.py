@@ -55,6 +55,6 @@ def process_details(a_ticket):
       #print(ent.text)
 
   return f"start = {a_ticket.departure_station}, finish = {a_ticket.destination}, day = {a_ticket.date_of_departure}, time = {a_ticket.time_of_departure}"
-
+  # Return ticket object instead?
 if __name__ == "__main__":
   pass

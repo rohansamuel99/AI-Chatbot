@@ -13,7 +13,7 @@ nlp = spacy.load("en_core_web_md")
 updated_nlp = spacy.load('/AI-Chatbot')
 
 if __name__ == "__main__":
-     # model = train_model()
+     #model = train_model()
      data = require_details()
      ticketFares = crawl(data)
 

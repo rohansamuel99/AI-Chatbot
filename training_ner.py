@@ -26,9 +26,7 @@ def train_model():
 
     used_station_list = []
     for every_station_name in station_list:
-        json_string = json.dumps(every_station_name)
-        with open('train_data.json', 'w') as outfile:
-            outfile.write(json_string)
+
         try:
             entities = []
             station = str(every_station_name)
@@ -39,6 +37,11 @@ def train_model():
             entities.append((start_index, end_index, 'STATION'))
             if station_in_sentence not in TRAIN_DATA:
                 TRAIN_DATA.append((station_in_sentence, {"entities": entities}))
+
+                json_string = json.dumps(TRAIN_DATA)
+                with open('train_data.json', 'w') as outfile:
+                    outfile.write(json_string)
+
                 used_station_list.append(every_station_name)
                 station_list.remove(every_station_name)
         except IndexError as i_error:
