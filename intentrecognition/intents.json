@@ -1,0 +1,88 @@
+{
+  "intents": [
+      {
+          "tag": "greeting", 
+          "patterns": [
+              "Hi", 
+              "Hey", 
+              "How are you", 
+              "Is anyone there?", 
+              "Hello", 
+              "Good day", 
+              "Howdy", 
+              "Hallo", 
+              "Heyy", 
+              "Well hi there!", 
+              "Good day sir", 
+              "Why hello there", 
+              "what's up fam?", 
+              "whats up home dawg?", 
+              "whats up fam", 
+              "whats up home dawg"
+          ], 
+          "responses": [
+              "hello"
+          ]
+      }, 
+      {
+          "tag": "goodbye", 
+          "patterns": [
+              "Bye", 
+              "See you later", 
+              "Goodbye"
+          ], 
+          "responses": [
+              "goodbye"
+          ]
+      }, 
+      {
+          "tag": "booking", 
+          "patterns": [
+              "I want to book a ticket", 
+              "I am interested in booking a train ticket", 
+              "Can I book a ticket", 
+              "I want a train ticket", 
+              "Inquiring about booking a ticket", 
+              "booking", 
+              "train ticket"
+              ], 
+              "responses": [
+                  "booking"
+              ]
+      }, 
+      {
+          "tag": "delay", 
+          "patterns": [
+              "Can you predict a delay time", 
+              "predict delay time", 
+              "Find new arrival time", 
+              "What time will my train arrive at destination", 
+              "What time will my train arrive", 
+              "My train has been delayed"
+          ], 
+          "responses": [
+              "delay"
+          ]
+      }, 
+      {
+          "tag": "info", 
+          "patterns": [
+              "How does this chat work?", 
+              "What kind of questions can I ask?", 
+              "How does this help me with trains?", 
+              "help", 
+              "help me please", 
+              "what can I do with this chat?",
+              "how can you help?", 
+              "please help me", 
+              "I don't understand how this works", 
+              "help me understand", 
+              "what functionality does this system have?", 
+              "what can this do?", 
+              "what can you do to help me?"], 
+              "responses": [
+                  "info"
+              ]
+      }
+  ]
+}
