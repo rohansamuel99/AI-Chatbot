@@ -30,7 +30,9 @@ def require_details():
         print(f"Departure Station: {a_word.text}")
       else:
         return "you didn't enter in a station"
+    # validation for time input
     departtime = input ("what time do you want to catch the train? \n")
+    # validation for date input
     departdate = input ("And what date would you like to leave? \n")
     finishquestion = input("Is that everything? Type Y or N: ")
     if finishquestion == "Y" or "y":
