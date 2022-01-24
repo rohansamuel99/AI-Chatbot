@@ -13,14 +13,8 @@ nlp = spacy.load("en_core_web_md")
 updated_nlp = spacy.load('/AI-Chatbot')
 
 if __name__ == "__main__":
-     #model = train_model()
+     # model = train_model()
      data = require_details()
-     ticketFares = crawl(data)
-
-     #N.B. need to sort ticketFares by cost using lamda
-     #N.B. Remove the testing block from crawl() once require_details() works.
-
-     webbrowser.open(ticketFares.url)
 
      process_details(data)
      # print("Group 26 Chatbot :D")

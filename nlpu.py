@@ -1,9 +1,13 @@
+from tracemalloc import start
+import webbrowser
 import spacy
 from training_ner import train_model
 from spacy import displacy
 from training_ner import train_model
 from ticket_details import Ticket
-from web_crawler import crawl
+from web_crawler import *
+from weather import getweatherAt
+import asyncio
 nlp = spacy.load("en_core_web_md")
 updated_nlp = spacy.load('/AI-Chatbot')
 
@@ -39,9 +43,35 @@ def require_details():
       userAnswering = False
       # Create Ticket object and return instead of details_list
       aticket = Ticket(name,tripdestination,tripdeparture,departtime,departdate)
+
+      ticketFares = crawl(aticket)
+
+      count = 1
+      print(f"Tickets found: ")
+      print(f"Start   |   End   |   Time  |   Duration  |   Cost")
+      for ticketFare in ticketFares.ticketFares:
+        print(f"{count} {ticketFare.start} | {ticketFare.end} | {ticketFare.startTime} | {ticketFare.length} | £{ticketFare.cost}")
+        count += 1
+
+      print("")
+      loop = asyncio.get_event_loop()
+      loop.run_until_complete(getweatherAt(aticket))
+      print("")
+
+      buyTicketquestion = input("Would you like to purchase one of these tickets? Type Y or N: ")
+      if buyTicketquestion == "Y" or "y":
+        webbrowser.open(ticketFares.url)
+
+      #N.B. need to sort ticketFares by cost using lamda
+      #N.B. Remove the testing block from crawl() once require_details() works.
+
       return aticket
     else:
       userAnswering = True
+
+
+async def getWeatherData(ticket):
+  await getweatherAt(ticket)
 
 def process_details(a_ticket):
 
