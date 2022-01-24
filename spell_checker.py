@@ -77,3 +77,7 @@ if __name__ == "__main__":
     spell_checker = SpellChecker()
     corrected_word = spell_checker.correction("nveber")
     print(corrected_word)
+
+    spell_checker = SpellChecker()
+    corrected_word = spell_checker.correction("wenesdy")
+    print(corrected_word)

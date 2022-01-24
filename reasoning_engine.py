@@ -1,5 +1,3 @@
-from intentrecognition.chat import *
-from intentrecognition.nltk_utils import stem
 from spell_checker import SpellChecker
 import re
 import spacy
@@ -7,14 +5,28 @@ from database_handler import DatabaseHandler
 from datetime import *
 import nltk
 from nltk.stem import PorterStemmer
-# from pathlib import Path
-# from spacy.pipeline import EntityRuler
+from pathlib import Path
+from spacy.pipeline import EntityRuler
 from dateutil.relativedelta import *
+from intentrecognition.chat import *
 
 
-#get_user_response
-#return_chatbot_answer
+def get_user_response():
+    while True:
+        f=open("C:/Users/rarihara/OneDrive - Agilent Technologies/Documents/Uni Stuff/AI CW/CW2/AI-Chatbot/test.txt/test.txt","r")
+        answer=f.read().split("@")
+        if len(answer)>1 and answer[1]=="user":
+            f.close()
+            return answer[0]
 
+def return_chatbot_answer(response,ticket=False):
+    f=open("C:/Users/rarihara/OneDrive - Agilent Technologies/Documents/Uni Stuff/AI CW/CW2/AI-Chatbot/test.txt/test.txt","w")
+    if ticket:
+        f.write(response+"@ticket")
+    else:
+        f.write(response+"@chatbot")
+    f.close()
+    return
 
 #Used to select the method of reasoning
 def reasoning(message, context):
@@ -45,7 +57,7 @@ def reasoning(message, context):
         return answer
 
     if context == "initial":
-        model = IntentClassification()
+        model = IntentRecognition()
         answer = model.get_response(message)
         return answer
 
@@ -66,9 +78,9 @@ def reasoning(message, context):
                 wordspellcheck = re.sub("[/\d-]","",words[i])
                 correct = spellChecker.make_correction(wordspellcheck)
                 if wordspellcheck != correct and wordspellcheck!="":
-                    returnChatbotAnswer("Did you mean "+ correct+"?")
+                    return_chatbot_answer("Did you mean "+ correct+"?")
                     while True:
-                        query = getUserResponse().lower()
+                        query = get_user_response().lower()
                         answer = get_yes_no(query)
                         if "yes" == query:
                             words[i] = correct
@@ -76,7 +88,7 @@ def reasoning(message, context):
                         elif "no" == query:
                             break
                         else:
-                            returnChatbotAnswer("Sorry I could not understand your response, please answer yes or no")
+                            return_chatbot_answer("Sorry I could not understand your response, please answer yes or no")
         except:return None
         message = " ".join(words)
         #Attempt to find an answer again with the spelling mistakes fixed
@@ -93,35 +105,35 @@ def reasoning(message, context):
         if answer!=None:
             return answer
         
-    #open flaskserver/acquistion.txt and append
+    #open acquistion.txt and append
     #If no answer could be found, return None
     return None
 
-#########station_ner and patterns.json?
-# def get_booking_info(message):
-#     message=re.sub("['\(\)]","",message)
-#     ner_path = Path("./station_ner")
-#     nlp = spacy.load(ner_path)
-#     ruler = EntityRuler(nlp,overwrite_ents=True).from_disk("./station_ner/patterns.jsonl")
-#     nlp.add_pipe(ruler)
-#     #Apply NER to the users message
-#     doc = nlp(message)
-#     departure=None
-#     arrival=None
-#     for ent in doc.ents:
-#         if ent.label_ == "LOC":
-#             station = check_station_exists(ent.text)
-#             if station != None:
-#                 if str(doc[ent.start-1])=="to":
-#                     arrival=station
-#                 elif str(doc[ent.start-1])=="from":
-#                     departure=station
-#                 else:
-#                     pass
-#     date=get_date(message)
-#     time = get_time(message)
-#     print(departure,arrival,date,time)
-#     return {"departure":departure,"arrival":arrival,"date":date,"time":time}
+
+def get_booking_info(message):
+    message=re.sub("['\(\)]","",message)
+    ner_path = Path("C:/Users/rarihara/OneDrive - Agilent Technologies/Documents/Uni Stuff/AI CW/CW2/AI-Chatbot")
+    nlp = spacy.load(ner_path)
+    ruler = EntityRuler(nlp,overwrite_ents=True).from_disk("C:/Users/rarihara/OneDrive - Agilent Technologies/Documents/Uni Stuff/AI CW/CW2/AI-Chatbot/train_data.json")
+    nlp.add_pipe(ruler)
+    #Apply NER to the users message
+    doc = nlp(message)
+    departure=None
+    arrival=None
+    for ent in doc.ents:
+        if ent.label_ == "LOC":
+            station = check_station_exists(ent.text)
+            if station != None:
+                if str(doc[ent.start-1])=="to":
+                    arrival=station
+                elif str(doc[ent.start-1])=="from":
+                    departure=station
+                else:
+                    pass
+    date=get_date(message)
+    time = get_time(message)
+    print(departure,arrival,date,time)
+    return {"departure":departure,"arrival":arrival,"date":date,"time":time}
 
 #Implement basic spacy named entity recognition
 def basic_spacy_ner(message):
@@ -151,7 +163,28 @@ def check_station_exists(station_name):
                     return answer
     database.close()
 
-############def get_locations
+#Look for potentual train stations in the users message
+def get_locations(message):
+    message=re.sub("['\(\)]","",message)
+    #Load the custom NER
+    ner_path = Path("C:/Users/rarihara/OneDrive - Agilent Technologies/Documents/Uni Stuff/AI CW/CW2/AI-Chatbot")
+    nlp = spacy.load(ner_path)
+    ruler = EntityRuler(nlp,overwrite_ents=True).from_disk("C:/Users/rarihara/OneDrive - Agilent Technologies/Documents/Uni Stuff/AI CW/CW2/AI-Chatbot/train_data.json")
+    nlp.add_pipe(ruler)
+    #Apply NER to the users message
+    doc = nlp(message)
+    test_station=""
+
+    #For each found entity in the users message
+    for ent in doc.ents:
+        if ent.label_=="LOC":
+            #If the entity found is a location, try and match it to a specific station using a database
+            station = check_station_exists(ent.text)
+            if station!=None:
+                return station
+
+    #If no station was found, return None
+    return None
 
 #Basic nltk stemmer implementation
 def stemmer(message):
@@ -305,18 +338,18 @@ def get_yes_no(message):
         return None
 
 if __name__ == "__main__":
-##    text = ["I am travelling on 20/02/2021",
-##            "today",
-##            "My journey is tomorrow",
-##            "I want to leave on the 20th of february 2021",
-##            "March 10th 2021",
-##            "I dont know",
-##            "I want to travel yesterday",
-##            "01/01/2021",
-##            "30/02/2021",
-##            "99/99/9999"]
-##    for i in text:
-##        print(get_date(i))
-    text = "I want a train from norwich to diss at 3pm on january 13th 2022"
+    # text = ["I am travelling on 20/02/2021",
+    #         "today",
+    #         "My journey is tomorrow",
+    #         "I want to leave on the 20th of february 2023",
+    #         "March 10th 2022",
+    #         "I dont know",
+    #         "I want to travel yesterday",
+    #         "01/05/2022",
+    #         "30/02/2022",
+    #         "22/22/2222"]
+    # for i in text:
+    #     print(get_date(i))
+    text = "I want a train from norwich to london at 3pm on january 31st 2022"
     print(text)
     print(reasoning(text,"booking"))

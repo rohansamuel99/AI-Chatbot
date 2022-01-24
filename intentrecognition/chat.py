@@ -8,8 +8,8 @@ import json
 
 import torch
 
-from model import NeuralNet
-from nltk_utils import bag_of_words, tokenize
+from intentrecognition.model import NeuralNet
+from intentrecognition.nltk_utils import bag_of_words, tokenize
 
 class IntentRecognition():
     def __init__(self):
