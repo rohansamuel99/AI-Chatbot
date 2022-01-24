@@ -11,6 +11,9 @@ class Greet(Fact):
 class name(Fact):
     name = Field(str)
 
+    def __str__(self):
+        return f"{name}"
+
 class destination(Fact):
     destination = Field(str)
 
@@ -52,20 +55,21 @@ class Conversation(KnowledgeEngine):
         yield Fact(action="greet")
 
 
+
     @Rule(Fact(action='greet'), AS.n << (name(name =W())), salience = 8)
     def ask_name(self,n):
             self.declare(name(n))
-            print(f"hi {n}")
-
+            print(".....Name retrieved......")
 
     @Rule(Fact(action='greet'), AS.n << (name(name='')),salience=7)
     def ask_name_error(self,n):
             self.retract(n)# How to remove previous empty string fact
             self.declare(name(name = input("You didn't enter in your name \n")))
 
-    @Rule(Fact(action='test'),  (destination(destination=W())), salience=7)
+    @Rule(Fact(action='greet'),  (destination(destination=W())), salience=7)
     def ask_location(self):
         self.declare(destination(destination))
+        print("......Destination retrieved.......")
 
 
     @Rule(Fact(action='greet'),  (departing_station(departure=W())),salience=6)
@@ -75,7 +79,7 @@ class Conversation(KnowledgeEngine):
     @Rule(Fact(action='greet'), (date(date= MATCH.answer)),salience=5)
     def ask_date_of_departure(self):
         #self.declare(date(date = input("What day would you like to leave? Enter number 1-31 \n ")))
-        print("hi what date would you like to leave?")
+        print(".....Date Retrieved........")
 
     # Rule for if they enter a day mon-sun
 
@@ -95,26 +99,13 @@ class Conversation(KnowledgeEngine):
     # 24hr format 4 digits
     def ask_leaving_time(self):
         #self.declare(leave_time(leave_time=input("What time do you want to leave? \n")))
-        print(f"this is the time you are leaving {leave_time}")
+        print(".....leaving time retrieved.......")
     @Rule(Fact(action='greet'), NOT (arrive_time(arrive_time=W())),salience =1)
     def ask_arrive_time(self):
         #self.declare(arrive_time(arrive_time=input("And what time would you like to arrive? \n")))
-        print(f"this is the time you are arriving {arrive_time}")
+        print(".....arriving time retrieved.....")
 
     # Rule for if they want a return ticket
-
-    @Rule(Fact(action='greet'),
-        name(name= MATCH.name),
-        destination(destination = MATCH.destination),
-        departing_station(departure= MATCH.departure),
-        leave_time(leave_time = MATCH.time),
-        date(date_of_departure = MATCH.date),
-        month(month_of_departure = MATCH.month),
-        arrive_time(arrive_time = MATCH.arrivetime))
-
-    def greet(self,name,destination,departure,time,arrivetime, date, month):
-        print(f"Hi {name}, so you want to go to {destination},"
-              f"leaving from {departure} station. You want to leave at {time}  on the {date} of {month} and arrive at {arrivetime}?")
 
     def invoke_web_scraping(self,name,destination,departure,time,arrivetime,date,month):
         pass
