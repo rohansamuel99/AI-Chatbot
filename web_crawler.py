@@ -1,6 +1,7 @@
 import urllib.request
 from bs4 import BeautifulSoup
 from ticket_details import Ticket
+from operator import attrgetter
 
 # -------------------------
 # File: web_crawler.py
@@ -30,11 +31,16 @@ class TicketFare():
       return super(TicketFare, self).__getattribute__(item)
 
 def crawl(ticket : Ticket):
+    # = 'cambridge' # in the form 'cambridge'
+    # = 'norwich' # in the form 'norwich'
+    # = '26012022' # in the form ddmmyyyy
+    # = '1645' # in the form '1645' (hhmm)
+
     #testing
-    start = ticket.departure_station  = 'cambridge' # in the form 'cambridge'
-    finish = ticket.destination       = 'norwich' # in the form 'norwich'
-    day = ticket.date_of_departure    = '26012022' # in the form ddmmyyyy
-    time = ticket.time_of_departure   = '1645' # in the form '1645' (hhmm)
+    start = ticket.departure_station  
+    finish = ticket.destination       
+    day = ticket.date_of_departure    
+    time = ticket.time_of_departure   
     departing = 'dep'
 
     # https://ojp.nationalrail.co.uk/service/timesandfares/cambridge/norwich/26012022/1645/dep#outwardJump
@@ -73,6 +79,8 @@ def crawl(ticket : Ticket):
       _length = f"{journeyDataLineArray[6]}h {journeyDataLineArray[7]}m"
 
       ticketFares.append(TicketFare(_start, _end, _startTime, _arrivalTime, _length, _cost))
+
+    ticketFares.sort(key=attrgetter('cost'))
 
     return TicketFares(ticketFares, urlUsed)
 
