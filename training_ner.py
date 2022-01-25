@@ -1,3 +1,10 @@
+# -------------------------
+# File: training_ner.py
+# Classes: N/A
+# Notes: This file is used to train spacy on custom data: Train Station names and produce a new entity in NER - STATION
+# Author: Samuel Bedeau
+# -------------------------
+
 import spacy
 from spacy.training import Example
 from spacy.util import minibatch, compounding
@@ -7,6 +14,7 @@ import json
 import random
 import warnings
 nlp = spacy.load("en_core_web_md")
+
 
 def train_model():
     ner = nlp.get_pipe('ner')
@@ -82,6 +90,8 @@ def train_model():
         print("Loading from", output_dir)
         nlp_updated = spacy.load(output_dir)
         return nlp_updated
+
+    # Test Data:
     '''
     doc = nlp_updated("Manchester is a station in the uk")
     print("Entities", [(ent.text, ent.label_) for ent in doc.ents])
