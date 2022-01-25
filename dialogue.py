@@ -17,26 +17,20 @@ class name(Fact):
 class destination(Fact):
     destination = Field(str)
 
-
 class departing_station(Fact):
     departure = Field(str)
-
 
 class leave_time(Fact):
     leave_time = Field(str)
 
-
 class arrive_time(Fact):
     arrive_time = Field(int)
-
 
 class date(Fact):
     date = Field(str)
 
-
 class month(Fact):
     month = Field(str)
-
 
 class ValidAnswer(Fact):
     answer = Field(int, mandatory=True)
@@ -48,65 +42,77 @@ class validations(Fact):
             return "True"
         else:
             return "invalid entry. Use 1-31"
+# Fact base for Task 2 - Improving Customer Service
+class train(Fact):
+    which_train = Field(str)
+class person_position(Fact):
+    where_is_person_at = Field(str)
 
-class Conversation(KnowledgeEngine):
-    @DefFacts()
-    def _initial_action(self):
-        yield Fact(action="greet")
+class delayed_time_train(Fact):
+    delayed = Field(str)
+class where_train_is_going(Fact):
+    train_destination = Field(str)
 
+class Conversation():
 
-
-    @Rule(Fact(action='greet'), AS.n << (name(name =W())), salience = 8)
+    @Rule(Fact(action='greet'), AS.n << (name(name =W())), salience = 15)
     def ask_name(self,n):
             self.declare(name(n))
             print(".....Name retrieved......")
 
-    @Rule(Fact(action='greet'), AS.n << (name(name='')),salience=7)
+    @Rule(Fact(action='greet'), AS.n << (name(name='')),salience=14)
     def ask_name_error(self,n):
             self.retract(n)# How to remove previous empty string fact
             self.declare(name(name = input("You didn't enter in your name \n")))
 
-    @Rule(Fact(action='greet'),  (destination(destination=W())), salience=7)
+    @Rule(Fact(action='greet'),  (destination(destination=W())), salience=13)
     def ask_location(self):
         self.declare(destination(destination))
         print("......Destination retrieved.......")
 
 
-    @Rule(Fact(action='greet'),  (departing_station(departure=W())),salience=6)
+    @Rule(Fact(action='greet'),  (departing_station(departure =W())),salience=12)
     def ask_departure_station(self):
         #self.declare(departing_station(departure=W()))
-        print(f"departing station: {departing_station}")
-    @Rule(Fact(action='greet'), (date(date= MATCH.answer)),salience=5)
+        print("....Departing Station retrieved......")
+
+    @Rule(Fact(action='greet'), NOT(date(date=W())),salience=11)
     def ask_date_of_departure(self):
         #self.declare(date(date = input("What day would you like to leave? Enter number 1-31 \n ")))
         print(".....Date Retrieved........")
 
-    # Rule for if they enter a day mon-sun
-
-    @Rule(Fact(action='greet'), AS.date << (date(date_of_departure=L('31'))),salience=4)  # Has to be numbers: 1 -31. don't forget to take into account for months less than 31 days
+    @Rule(Fact(action='greet'), AS.date << (date(date=L('31'))),salience=10)  # Has to be numbers: 1 -31. don't forget to take into account for months less than 31 days
     def ask_date_error(self,date):
-        self.declare(date(date_of_departure=input("You entered incorrectly. Please try again \n ")))
+        self.declare(date(date=input("You entered incorrectly. Please try again \n ")))
         print("incorrect date")
-    # Rule for if they enter a day mon-sun
 
-
-
-    @Rule(Fact(action='greet'), (month(month_of_departure=W())),salience=3) # Jan - Dec
+    @Rule(Fact(action='greet'), (month(month_of_departure=W())),salience=9) # Jan - Dec
     def ask_month_of_departure(self):
         #self.declare(month(month_of_departure=input("What month would you like to leave? ")))
-        print("hi")
-    @Rule(Fact(action='greet'),  (leave_time(leave_time=W())),salience=2)
+        print(".....Month of Departure retrieved......")
+
+    @Rule(Fact(action='greet'), (leave_time(leave_time=W())),salience=8)
     # 24hr format 4 digits
     def ask_leaving_time(self):
         #self.declare(leave_time(leave_time=input("What time do you want to leave? \n")))
         print(".....leaving time retrieved.......")
-    @Rule(Fact(action='greet'), NOT (arrive_time(arrive_time=W())),salience =1)
+
+    @Rule(Fact(action='greet'), NOT (arrive_time(arrive_time=W())),salience =7)
     def ask_arrive_time(self):
         #self.declare(arrive_time(arrive_time=input("And what time would you like to arrive? \n")))
         print(".....arriving time retrieved.....")
 
     # Rule for if they want a return ticket
 
+    @Rule(Fact(action='greet'),
+          NOT (name(name=MATCH.name),
+          NOT (destination(destination=MATCH.destination),
+          NOT (departing_station(departure= MATCH.departure),
+          NOT (date(date=MATCH.date),
+          NOT (leave_time(leave_time=MATCH.leave_time))
+          )))))
+    def greeting(self,name,destination,departure,date,leave_time):
+        print(f"Hi {name}, so you are going to {destination} from {departure}, and leaving at {leave_time} on {date}?")
     def invoke_web_scraping(self,name,destination,departure,time,arrivetime,date,month):
         pass
         # Call webscraping
@@ -114,10 +120,41 @@ class Conversation(KnowledgeEngine):
 
 
 
+class CustomerService():
+    @Rule(Fact(action='ask'), NOT (train(which_train=W())),salience = 6)
+    def retrieve_which_train(self):
+        self.declare(train(which_train = input("What train are you on?")))
+
+    @Rule(Fact(action='ask'), NOT (person_position(where_is_person_at=W())),salience=5)
+    def retrieve_where_is_train(self):
+        self.declare(person_position(where_is_train=input("Where are you currently waiting for the train? Input Station")))
+
+    @Rule(Fact(action='ask'), NOT (delayed_time_train(delayed=W())),salience=4)
+    def retrieve_delay_time(self):
+        self.declare(delayed_time_train(delayed=input("How long is the train delayed for?")))
+
+    @Rule(Fact(action='ask'), NOT (where_train_is_going(train_destination=W())), salience=3)
+    def retrieve_train_destination(self):
+        self.declare(where_train_is_going(train_destination=input("And where is the train going?")))
+
+    @Rule(Fact(action='ask'),
+      train(which_train= MATCH.which_train),
+      person_position(where_is_person_at = MATCH.where_is_person_at),
+      delayed_time_train(delayed= MATCH.delayed),
+      where_train_is_going(train_destination = MATCH.train_destination))
+    def predictive_modelling(self):
+        pass
+
+
+class Knowledge(Conversation,CustomerService,KnowledgeEngine):
+    @DefFacts()
+    def _initial_action(self):
+        yield (Fact(action="ask"))
+        yield Fact(action="greet")
 
 if __name__ == "__main__":
     a_ticket = require_details()
-    engine = Conversation()
+    engine = Knowledge()
     engine.reset()
     engine.declare(name(name=str(a_ticket.name)),
                    destination(destination =str(a_ticket.destination)),
