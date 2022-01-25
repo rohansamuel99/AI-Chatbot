@@ -1,3 +1,10 @@
+# -------------------------
+# File: dialogue.py
+# Classes: Conversation,CustomerService, Knowledge, Greet, name, destination, departing_station, leave_time, arrive_time, ValidAnswer,validations, train, person_position, delayed_time_train, where_train_is_going
+# Notes: This file is used to control the dialogue. NlPU feeds this file facts and dialogue has rules that execute if the rules match the fafcts
+# Author: Samuel Bedeau
+# -------------------------
+
 from random import choice
 from experta import *
 import datetime
@@ -133,17 +140,18 @@ class CustomerService():
     def retrieve_delay_time(self):
         self.declare(delayed_time_train(delayed=input("How long is the train delayed for?")))
 
+
     @Rule(Fact(action='ask'), NOT (where_train_is_going(train_destination=W())), salience=3)
     def retrieve_train_destination(self):
         self.declare(where_train_is_going(train_destination=input("And where is the train going?")))
 
     @Rule(Fact(action='ask'),
-      train(which_train= MATCH.which_train),
-      person_position(where_is_person_at = MATCH.where_is_person_at),
-      delayed_time_train(delayed= MATCH.delayed),
-      where_train_is_going(train_destination = MATCH.train_destination))
+      NOT (train(which_train= MATCH.which_train),
+      NOT (person_position(where_is_person_at = MATCH.where_is_person_at),
+      NOT (delayed_time_train(delayed= MATCH.delayed),
+      NOT (where_train_is_going(train_destination = MATCH.train_destination))))))
     def predictive_modelling(self):
-        pass
+        print("test")
 
 
 class Knowledge(Conversation,CustomerService,KnowledgeEngine):
